@@ -93,19 +93,18 @@ function display_author(string $authorEmail, array $users) : string
 <html>
 <head>
     <title>Affichage des recettes</title>
-
 </head>
 <body>
-    <h1>Liste des recettes de cuisine</h1>
-    <?php foreach (getRecipes($recipes) as $recipe): ?>
-        <?php if ($recipe['is_enabled']): ?>
-            <article>
-                <h3><?php echo $recipe['title']; ?></h3> 
-                <i><?php echo(display_author($recipe['author'], $users)); ?></i>
-            </article>
-        <?php endif; ?>
-    <?php endforeach; ?>
-
+        <h1>Liste des recettes de cuisine</h1>
+        <?php foreach (getRecipes($recipes) as $recipe): ?>
+            <?php if ($recipe['is_enabled']): ?>
+                <article>
+                    <h3><?php echo $recipe['title']; ?></h3> 
+                    <i><?php echo(display_author($recipe['author'], $users)); ?></i>
+                </article>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
     
 </body>
 </html>
