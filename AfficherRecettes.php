@@ -1,23 +1,28 @@
 <?php
-// Declaration du tableau des recettes
 $recipes = [
     [
         'title' => 'Cassoulet',
-        'recipe' => 'Etape 1 : des flageolets',
+        'recipe' => '',
         'author' => 'mickael.andrieu@exemple.com',
         'is_enabled' => true,
     ],
     [
         'title' => 'Couscous',
-        'recipe' => 'Etape 1 : de la semoule',
+        'recipe' => '',
         'author' => 'mickael.andrieu@exemple.com',
         'is_enabled' => false,
     ],
     [
         'title' => 'Escalope milanaise',
-        'recipe' => 'Etape 1 : prenez une belle escalope',
+        'recipe' => '',
         'author' => 'mathieu.nebra@exemple.com',
         'is_enabled' => true,
+    ],
+    [
+        'title' => 'Salade Romaine',
+        'recipe' => '',
+        'author' => 'laurene.castor@exemple.com',
+        'is_enabled' => false,
     ],
 ];
 $users = [
@@ -48,8 +53,6 @@ $isEnabled = false;
 }
 return $isEnabled;
 }
-$isCassouletValid=isValidRecipe($recipes[0]);
-$isEscalopeValid=isValidRecipe($recipes[2]);
 ?>
 
     
@@ -86,9 +89,11 @@ function display_author(string $authorEmail, array $users) : string
 ?>
 
 <!DOCTYPE html>
+<html lang="en">
 <html>
 <head>
     <title>Affichage des recettes</title>
+
 </head>
 <body>
     <h1>Liste des recettes de cuisine</h1>
