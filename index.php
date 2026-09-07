@@ -12,15 +12,15 @@ rel="stylesheet"
 >
 </head>
 <body class="d-flex flex-column min-vh-100">
-<div class="container">
+<div class="container flex-grow-1">
+<!-- inclusion MENU en premier -->
+<?php include_once('header.php'); ?>
 <h1>Site de recettes</h1>
-<!-- inclusion des variables et fonctions -->
+<!-- inclusion de entete de sute -->
 <?php
 include_once('variables.php');
 include_once('functions.php');
 ?>
-<!-- inclusion de l'entête du site -->
-<?php include_once('header.php'); ?>
 <?php foreach(getRecipes($recipes) as $recipe) : ?>
 <article>
 <h3><?php echo $recipe['title']; ?> </h3>
@@ -33,4 +33,3 @@ include_once('functions.php');
 <?php include_once('footer.php'); ?>
 </body>
 </html>
-Page
