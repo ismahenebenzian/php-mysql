@@ -22,8 +22,6 @@ $validRecipes[] = $recipe;
 }
 return $validRecipes;
 }
-// construire l'affichage HTML des recettes
-
 ?>
 
     
