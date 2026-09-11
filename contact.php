@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Site de recettes - Formulaire de Contact</title>
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 </head>
@@ -15,25 +15,31 @@
     <div class="container flex-grow-1">
 
         <?php include_once('header.php'); ?>
+
         <h1>Contactez nous</h1>
-        <form action="submit_contact.php" method="POST" enctype="multipart/form-data">
+
+        <!-- Formulaire en GET  -->
+        <form action="submit_contact.php" method="GET">
+
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" aria-describedby="email-help">
                 <div id="email-help" class="form-text">Nous ne revendrons pas votre email.</div>
             </div>
+
             <div class="mb-3">
                 <label for="message" class="form-label">Votre message</label>
                 <textarea class="form-control" placeholder="Exprimez vous" id="message" name="message"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Envoyer</button>
         </form>
+
         <br />
     </div>
 
     <?php include_once('footer.php'); ?>
 
-    <!-- Inclusion menu hamburger -->
+    <!-- Inclusion de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
