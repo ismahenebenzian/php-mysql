@@ -19,7 +19,7 @@
         <h1>Contactez nous</h1>
 
         <!-- Formulaire en GET  -->
-        <form action="submit_contact.php" method="GET">
+        <form action="submit_contact.php" method="POST">
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
