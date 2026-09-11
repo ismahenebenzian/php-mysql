@@ -13,12 +13,17 @@
         <!-- inclusion MENU en premier -->
         <?php include_once('header.php'); ?>
 
-        <?php
-        if (!isset($_GET['email']) || !isset($_GET['message'])) {
-            // S'il manque un paramètre, on affiche l'erreur
-            echo('<h1>Il faut un email et un message pour soumettre le formulaire.</h1>');
-        } else {
-        ?>
+<?php
+if (
+(!isset($_GET['email']) || !filter_var($_GET['email'], FILTER_VALIDATE_EMAIL))
+|| (!isset($_GET['message']) || empty($_GET['message']))
+)
+{
+echo('Il faut un email et un message valides pour soumettre le formulaire.');
+return;
+}
+?>
+        
             <h1>Message bien reçu !</h1>
             <div class="card">
                 <div class="card-body">
@@ -28,7 +33,6 @@
                 </div>
             </div>
         <?php
-        }
         ?>
     </div>
 
