@@ -36,9 +36,12 @@
                 $allowedExtensions = ['jpg', 'jpeg', 'gif', 'png'];
                 if (in_array($extension, $allowedExtensions)) {
                     // On peut valider le fichier et le stocker définitivement
+                    $files = scandir('uploads/');
+                    $number = count($files);
+
                     move_uploaded_file(
                         $_FILES['screenshot']['tmp_name'],
-                        'uploads/' . basename($_FILES['screenshot']['name'])
+                        'uploads/' . $number . '.' . $extension
                     );
                     echo "L'envoi a bien été effectué !";
                 }
