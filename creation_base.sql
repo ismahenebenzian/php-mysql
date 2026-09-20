@@ -1,5 +1,7 @@
 DROP DATABASE IF EXISTS `my_recipes`;
-CREATE DATABASE `my_recipes`;
+CREATE DATABASE `my_recipes`
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 CREATE TABLE `my_recipes`.`users` ( `user_id` INT NOT NULL AUTO_INCREMENT , `full_name` VARCHAR(64) NOT NULL , `email` VARCHAR(512) NOT NULL , `password` VARCHAR(512) NOT NULL , `age` INT NOT NULL , PRIMARY KEY (`user_id`)) ENGINE = MyISAM;
 CREATE TABLE `my_recipes`.`recipes` ( `recipe_id` INT NOT NULL AUTO_INCREMENT , `title` VARCHAR(128) NOT NULL , `recipe` TEXT NOT NULL , `author` VARCHAR(512) NOT NULL , `is_enabled` BOOLEAN NOT NULL , PRIMARY KEY (`recipe_id`)) ENGINE = MyISAM;
 CREATE TABLE `my_recipes`.`comments` ( `comment_id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL, `recipe_id` INT NOT NULL, `comment` TEXT NOT NULL , PRIMARY KEY (`comment_id`), FOREIGN KEY (`user_id`) REFERENCES users(`user_id`), FOREIGN KEY (`recipe_id`) REFERENCES recipes(`recipe_id`)) ENGINE = MyISAM;
