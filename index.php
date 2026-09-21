@@ -71,7 +71,14 @@ session_start();
                     <i>
                         <?php echo displayAuthor($recipe['author'], $users); ?>
                     </i>
+
+                    <?php if ($_SESSION['LOGGED_USER'] === $recipe['author']) : ?>
+                        <br>
+                        <a href="edit_recipe.php?id=<?php echo $recipe['recipe_id']; ?>">Modifier</a>
+                    <?php endif; ?>
                 </article>
+
+                <hr>
 
             <?php endforeach; ?>
 
