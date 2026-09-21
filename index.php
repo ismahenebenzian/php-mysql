@@ -77,6 +77,47 @@ session_start();
                         <a href="edit_recipe.php?id=<?php echo $recipe['recipe_id']; ?>">Modifier</a>
                         <a href="delete_recipe.php?id=<?php echo $recipe['recipe_id']; ?>">Supprimer</a>
                     <?php endif; ?>
+
+                    <?php
+                    // Récupérer les commentaires de cette recette
+                    $sqlQuery = 'SELECT c.comment, u.email 
+                                 FROM comments c 
+                                 JOIN users u ON c.user_id = u.user_id 
+                                 WHERE c.recipe_id = :recipe_id';
+                    $stmt = $db->prepare($sqlQuery);
+                    $stmt->execute(['recipe_id' => $recipe['recipe_id']]);
+                    $comments = $stmt->fetchAll();
+                    ?>
+
+                    <!-- Affichage des commentaires -->
+                    <h4>Commentaires</h4>
+
+                    <?php if (count($comments) > 0): ?>
+                        <?php foreach ($comments as $comment): ?>
+                            <div>
+                                <p><?php echo $comment['comment']; ?></p>
+                                <small><?php echo displayAuthor($comment['email'], $users); ?></small>
+                            </div>
+                            <hr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>Aucun commentaire pour le moment.</p>
+                    <?php endif; ?>
+
+                    <!-- Formulaire pour ajouter un commentaire -->
+                    <?php if (isset($_SESSION['LOGGED_USER'])): ?>
+                        <form action="submit_comment.php" method="POST">
+                            <input type="hidden" name="recipe_id" value="<?php echo $recipe['recipe_id']; ?>">
+
+                            <p>
+                                <label for="comment_<?php echo $recipe['recipe_id']; ?>">Votre commentaire</label><br>
+                                <textarea id="comment_<?php echo $recipe['recipe_id']; ?>" name="comment" rows="3" required></textarea>
+                            </p>
+
+                            <button type="submit">Envoyer</button>
+                        </form>
+                    <?php endif; ?>
+
                 </article>
 
                 <hr>
