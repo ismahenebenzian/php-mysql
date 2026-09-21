@@ -19,10 +19,11 @@ if (
 $recipeId = (int) $_POST['recipe_id'];
 $title    = $_POST['title'];
 $recipe   = $_POST['recipe'];
+$isEnabled = isset($_POST['is_enabled']) ? 1 : 0;
 
 $sqlQuery = 'SELECT * FROM recipes WHERE recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
-$stmt->execute(['recipe_id' => $recipeId]) or die(print_r($db->errorInfo()));
+$stmt->execute(['recipe_id' => $recipeId]);
 $existing = $stmt->fetch();
 
 if (!$existing || $existing['author'] !== $_SESSION['LOGGED_USER']) {
@@ -30,13 +31,18 @@ if (!$existing || $existing['author'] !== $_SESSION['LOGGED_USER']) {
     return;
 }
 
-$sqlQuery = 'UPDATE recipes SET title = :title, recipe = :recipe WHERE recipe_id = :recipe_id';
+$sqlQuery = 'UPDATE recipes 
+             SET title = :title, 
+                 recipe = :recipe, 
+                 is_enabled = :is_enabled 
+             WHERE recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute([
-    'title'     => $title,
-    'recipe'    => $recipe,
-    'recipe_id' => $recipeId,
-]) or die(print_r($db->errorInfo()));
+    'title'      => $title,
+    'recipe'     => $recipe,
+    'is_enabled' => $isEnabled,
+    'recipe_id'  => $recipeId,
+]);
 
-echo 'Recette modifiée avec succès !';
-echo '<br><a href="index.php">Retour</a>';
+header('Location: recipe.php?id=' . $recipeId);
+exit;
