@@ -75,6 +75,7 @@ session_start();
                     <?php if ($_SESSION['LOGGED_USER'] === $recipe['author']) : ?>
                         <br>
                         <a href="edit_recipe.php?id=<?php echo $recipe['recipe_id']; ?>">Modifier</a>
+                        <a href="delete_recipe.php?id=<?php echo $recipe['recipe_id']; ?>">Supprimer</a>
                     <?php endif; ?>
                 </article>
 
