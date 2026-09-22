@@ -14,7 +14,10 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 $recipeId = (int) $_GET['id'];
 
-$sqlQuery = 'SELECT * FROM recipes WHERE recipe_id = :recipe_id';
+$sqlQuery = 'SELECT r.*, u.email 
+             FROM recipes r 
+             JOIN users u ON r.user_id = u.user_id 
+             WHERE r.recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute(['recipe_id' => $recipeId]);
 $recipe = $stmt->fetch();
@@ -24,7 +27,7 @@ if (!$recipe) {
     return;
 }
 
-if ($recipe['author'] !== $_SESSION['LOGGED_USER']) {
+if ($recipe['email'] !== $_SESSION['LOGGED_USER']) {
     echo 'Accès refusé.';
     return;
 }
@@ -34,24 +37,31 @@ if ($recipe['author'] !== $_SESSION['LOGGED_USER']) {
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supprimer une recette</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-<?php include_once('header.php'); ?>
+    <?php include_once('header.php'); ?>
 
-<h1>Supprimer <?php echo $recipe['title']; ?></h1>
+    <div class="container mt-4">
 
-<form action="submit_delete_recipe.php" method="POST">
-    <input type="hidden" name="recipe_id" value="<?php echo $recipe['recipe_id']; ?>">
+        <h1>Supprimer la recette</h1>
 
-    <p>Voulez-vous vraiment supprimer cette recette ?</p>
+        <p>Voulez-vous vraiment supprimer cette recette ?</p>
+        <h4><?php echo $recipe['title']; ?></h4>
 
-    <button type="submit">Oui, supprimer</button>
-    <a href="index.php">Annuler</a>
-</form>
+        <form action="submit_delete_recipe.php" method="POST">
+            <input type="hidden" name="recipe_id" value="<?php echo $recipe['recipe_id']; ?>">
 
-<?php include_once('footer.php'); ?>
+            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+            <a href="index.php" class="btn btn-secondary">Annuler</a>
+        </form>
+
+    </div>
+
+    <?php include_once('footer.php'); ?>
 
 </body>
 </html>

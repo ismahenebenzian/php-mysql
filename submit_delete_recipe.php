@@ -14,26 +14,26 @@ if (!isset($_POST['recipe_id']) || !ctype_digit($_POST['recipe_id'])) {
 
 $recipeId = (int) $_POST['recipe_id'];
 
-// Vérifier le propriétaire
-$sqlQuery = 'SELECT * FROM recipes WHERE recipe_id = :recipe_id';
+$sqlQuery = 'SELECT r.*, u.email 
+             FROM recipes r 
+             JOIN users u ON r.user_id = u.user_id 
+             WHERE r.recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute(['recipe_id' => $recipeId]);
 $recipe = $stmt->fetch();
 
-if (!$recipe || $recipe['author'] !== $_SESSION['LOGGED_USER']) {
+if (!$recipe || $recipe['email'] !== $_SESSION['LOGGED_USER']) {
     echo 'Accès refusé.';
     return;
 }
 
-// Supprimer les commentaires liés (si la table comments existe)
 $sqlQuery = 'DELETE FROM comments WHERE recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute(['recipe_id' => $recipeId]);
 
-// Supprimer la recette
 $sqlQuery = 'DELETE FROM recipes WHERE recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute(['recipe_id' => $recipeId]);
 
-echo 'La recette a bien été supprimée.';
-echo '<br><a href="index.php">Retour</a>';
+header('Location: index.php');
+exit;

@@ -21,12 +21,15 @@ $title    = $_POST['title'];
 $recipe   = $_POST['recipe'];
 $isEnabled = isset($_POST['is_enabled']) ? 1 : 0;
 
-$sqlQuery = 'SELECT * FROM recipes WHERE recipe_id = :recipe_id';
+$sqlQuery = 'SELECT r.*, u.email 
+             FROM recipes r 
+             JOIN users u ON r.user_id = u.user_id 
+             WHERE r.recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute(['recipe_id' => $recipeId]);
 $existing = $stmt->fetch();
 
-if (!$existing || $existing['author'] !== $_SESSION['LOGGED_USER']) {
+if (!$existing || $existing['email'] !== $_SESSION['LOGGED_USER']) {
     echo 'Accès refusé.';
     return;
 }

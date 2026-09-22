@@ -17,18 +17,28 @@ if (
 
 $title  = trim($_POST['title']);
 $recipe = trim($_POST['recipe']);
-$author = $_SESSION['LOGGED_USER'];
 
-$sqlQuery = 'INSERT INTO recipes(title, recipe, author, is_enabled) 
-             VALUES (:title, :recipe, :author, :is_enabled)';
+$sqlQuery = 'SELECT user_id FROM users WHERE email = :email';
+$stmt = $db->prepare($sqlQuery);
+$stmt->execute(['email' => $_SESSION['LOGGED_USER']]);
+$user = $stmt->fetch();
 
-$insertRecipe = $db->prepare($sqlQuery);
-$insertRecipe->execute([
+if (!$user) {
+    echo 'Utilisateur introuvable.';
+    return;
+}
+
+$userId = $user['user_id'];
+
+$sqlQuery = 'INSERT INTO recipes(user_id, title, recipe, is_enabled) 
+             VALUES (:user_id, :title, :recipe, :is_enabled)';
+$stmt = $db->prepare($sqlQuery);
+$stmt->execute([
+    'user_id'    => $userId,
     'title'      => $title,
     'recipe'     => $recipe,
-    'author'     => $author,
     'is_enabled' => 1,
 ]);
 
-echo 'Recette ajoutée avec succès !';
-echo '<br><a href="index.php">Retour à l\'accueil</a>';
+header('Location: index.php');
+exit;

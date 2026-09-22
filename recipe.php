@@ -16,7 +16,10 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 $recipeId = (int) $_GET['id'];
 
-$sqlQuery = 'SELECT * FROM recipes WHERE recipe_id = :recipe_id';
+$sqlQuery = 'SELECT r.*, u.email 
+             FROM recipes r 
+             JOIN users u ON r.user_id = u.user_id 
+             WHERE r.recipe_id = :recipe_id';
 $stmt = $db->prepare($sqlQuery);
 $stmt->execute(['recipe_id' => $recipeId]);
 $recipe = $stmt->fetch();
@@ -32,87 +35,90 @@ if (!$recipe) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $recipe['title']; ?> - Site de recettes</title>
+    <title><?php echo $recipe['title']; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body>
 
     <?php include_once('header.php'); ?>
 
-    <div class="container flex-grow-1 py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-9">
+    <div class="container mt-4">
 
-                <a href="index.php" class="btn btn-secondary btn-sm mb-3">Retour à l'accueil</a>
+        <a href="index.php">Retour à l'accueil</a>
 
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
+        <h1><?php echo $recipe['title']; ?></h1>
 
-                        <h1 class="text-primary mb-3"><?php echo $recipe['title']; ?></h1>
+        <p><?php echo $recipe['recipe']; ?></p>
 
-                        <p><?php echo $recipe['recipe']; ?></p>
+        <i>Par <?php echo displayAuthor($recipe['email'], $users); ?></i>
 
-                        <p class="text-muted fst-italic">
-                            Par <?php echo displayAuthor($recipe['author'], $users); ?>
-                        </p>
+        <?php if ($_SESSION['LOGGED_USER'] === $recipe['email']) : ?>
+            <p>
+                <a href="edit_recipe.php?id=<?php echo $recipe['recipe_id']; ?>" class="btn btn-primary btn-sm">Modifier</a>
+                <a href="delete_recipe.php?id=<?php echo $recipe['recipe_id']; ?>" class="btn btn-danger btn-sm">Supprimer</a>
+            </p>
+        <?php endif; ?>
 
-                        <?php if ($_SESSION['LOGGED_USER'] === $recipe['author']) : ?>
-                            <a href="edit_recipe.php?id=<?php echo $recipe['recipe_id']; ?>" 
-                               class="btn btn-primary btn-sm">Modifier</a>
-                            <a href="delete_recipe.php?id=<?php echo $recipe['recipe_id']; ?>" 
-                               class="btn btn-danger btn-sm">Supprimer</a>
-                        <?php endif; ?>
+        <hr>
 
-                        <hr class="my-4">
+        <!-- Moyenne des notes -->
+        <?php
+        $sqlQuery = 'SELECT AVG(review) AS moyenne, COUNT(*) AS nb 
+                     FROM comments WHERE recipe_id = :recipe_id';
+        $stmt = $db->prepare($sqlQuery);
+        $stmt->execute(['recipe_id' => $recipeId]);
+        $stats = $stmt->fetch();
 
-                        <h4 class="text-secondary mb-3">Commentaires</h4>
+        $moyenne = $stats['moyenne'] ? round($stats['moyenne'], 1) : 0;
+        $nbCommentaires = $stats['nb'];
+        ?>
 
-                        <?php
-                        $sqlQuery = 'SELECT c.comment, c.created_at, u.email 
-                                     FROM comments c 
-                                     JOIN users u ON c.user_id = u.user_id 
-                                     WHERE c.recipe_id = :recipe_id 
-                                     ORDER BY c.created_at DESC';
-                        $stmt = $db->prepare($sqlQuery);
-                        $stmt->execute(['recipe_id' => $recipeId]);
-                        $comments = $stmt->fetchAll();
-                        ?>
+        <p><b>Note moyenne :</b> <?php echo $moyenne; ?>/5 (<?php echo $nbCommentaires; ?> avis)</p>
 
-                        <?php if (count($comments) > 0): ?>
-                            <?php foreach ($comments as $comment): ?>
-                                <div class="border-start border-3 border-primary ps-3 mb-3">
-                                    <p class="mb-1"><?php echo $comment['comment']; ?></p>
-                                    <small class="text-muted">
-                                        <?php echo displayAuthor($comment['email'], $users); ?>
-                                    </small>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="text-muted fst-italic">Aucun commentaire pour le moment.</p>
-                        <?php endif; ?>
+        <hr>
 
-                        <form action="submit_comment.php" method="POST" class="bg-light p-3 rounded mt-4">
-                            <input type="hidden" name="recipe_id" value="<?php echo $recipe['recipe_id']; ?>">
+        <h4>Commentaires</h4>
 
-                            <div class="mb-3">
-                                <label for="comment" class="form-label">Postez un commentaire</label>
-                                <textarea class="form-control" id="comment" name="comment" 
-                                          placeholder="Soyez respectueux/se, nous sommes humain(e)s." 
-                                          rows="3" required></textarea>
-                            </div>
+        <?php
+        $sqlQuery = 'SELECT c.comment, c.created_at, c.review, u.email 
+                     FROM comments c 
+                     JOIN users u ON c.user_id = u.user_id 
+                     WHERE c.recipe_id = :recipe_id 
+                     ORDER BY c.created_at DESC';
+        $stmt = $db->prepare($sqlQuery);
+        $stmt->execute(['recipe_id' => $recipeId]);
+        $comments = $stmt->fetchAll();
+        ?>
 
-                            <button type="submit" class="btn btn-primary">Envoyer</button>
-                        </form>
+        <?php if (count($comments) > 0): ?>
+            <?php foreach ($comments as $comment): ?>
+                <p><?php echo $comment['comment']; ?></p>
+                <i><?php echo displayAuthor($comment['email'], $users); ?> - Note : <?php echo $comment['review']; ?>/5 - <?php echo $comment['created_at']; ?></i>
+                <hr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>Aucun commentaire pour le moment.</p>
+        <?php endif; ?>
 
-                    </div>
-                </div>
+        <form action="submit_comment.php" method="POST">
+            <input type="hidden" name="recipe_id" value="<?php echo $recipe['recipe_id']; ?>">
 
-            </div>
-        </div>
+            <p>
+                <label for="comment">Postez un commentaire</label><br>
+                <textarea id="comment" name="comment" rows="3" required></textarea>
+            </p>
+
+            <p>
+                <label for="review">Votre note (0 à 5)</label><br>
+                <input type="number" id="review" name="review" min="0" max="5" required>
+            </p>
+
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+
     </div>
 
     <?php include_once('footer.php'); ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
